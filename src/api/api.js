@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://backend-task-erlt.onrender.com";
+const API_URL = "https://backend-task-erlt.onrender.com/api";
 
 
 // Fetch all events
