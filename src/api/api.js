@@ -5,10 +5,14 @@ const API_URL = "https://backend-task-erlt.onrender.com/api";
 
 // Fetch all events
 export const getEvents = async () => {
-  const response = await axios.get(`${API_URL}/events`);
-  return response.data;
+  try {
+    const response = await axios.get(`${API_URL}/events`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    return []; // Return empty array to prevent errors in frontend
+  }
 };
-
 // Fetch a single event by ID
 export const getEventById = async (id) => {
   const response = await axios.get(`${API_URL}/events/${id}`);
@@ -23,8 +27,17 @@ export const getEventDetails = async (id) => {
 
 // User Authentication
 export const registerUser = async (userData) => {
-  const response = await axios.post(`${API_URL}/auth/register`, userData);
-  return response.data;
+  try {
+    const response = await fetch("https://backend-task-erlt.onrender.com/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Error registering user:", error);
+    throw error;
+  }
 };
 
 export const loginUser = async (userData) => {
