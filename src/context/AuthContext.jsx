@@ -1,51 +1,42 @@
-import { createContext, useState, useEffect, useContext } from "react";
-import { getUserProfile } from "../api/api";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-export const AuthContext = createContext();
+// Create the authentication context
+const AuthContext = createContext();
 
-// Custom hook to use AuthContext
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
-
-
-const AuthProvider = ({ children }) => {
+// Provide authentication state to the entire application
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  // Check if user is logged in on app load
+  // Check if user is already logged in from local storage
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        const userData = await getUserProfile(token);
-        if (userData) {
-          setUser(userData);
-        }
-      }
-      setLoading(false);
-    };
-
-    fetchUser();
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   }, []);
 
-  // Login function
-  const login = (userData, token) => {
-    localStorage.setItem("token", token);
+  // Function to log in a user
+  const login = (userData) => {
     setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
   };
 
-  // Logout function
+  // Function to log out a user
   const logout = () => {
-    localStorage.removeItem("token");
     setUser(null);
+    localStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export { AuthProvider };
+// Custom hook to use authentication state
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
+
+export default AuthContext;

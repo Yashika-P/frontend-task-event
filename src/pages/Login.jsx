@@ -1,40 +1,47 @@
-import { useState } from "react";
-import { useAuth } from "../context/AuthContext"; // Import useAuth hook
+import { useState } from 'react';
+import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
+import { loginUser } from "../api/api";
 
 const Login = () => {
-  const { login } = useAuth(); // Get login function from AuthContext
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const { login } = useAuth(); // ✅ Use `login`
+  const [error, setError] = useState("");  
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // Simulating API call - Replace this with actual API request
-      const userData = { email }; 
-      const token = "demo-token"; // Replace with actual token from API response
+      const data = await loginUser(email, password);
+      console.log('Login successful:', data);
+      alert(`Welcome, ${data.user.name}!`);
 
-      login(userData, token); // Store user data in context
-      navigate("/dashboard"); // Redirect after login
-    } catch (err) {
-      setError("Invalid credentials. Please try again.");
+      // ✅ Log in user and redirect to dashboard
+      login(data.user); 
+      navigate("/dashboard"); 
+
+    } catch (error) {
+      console.error('Login failed:', error);
+      setError(error.response?.data?.message || 'Login failed');
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+    <div
+      className="flex items-center justify-center min-h-screen bg-cover bg-center"
+      style={{ backgroundImage: `url('/images/login.bg.jpg')` }}
+    >
       <div className="bg-white p-6 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+        <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Login</h2>
 
-        {error && <p className="text-red-500 text-center mb-2">{error}</p>}
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="flex flex-col">
           <input
             type="email"
             placeholder="Email"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="mb-3 p-3 border rounded-lg focus:outline-none focus:border-blue-500"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -42,30 +49,22 @@ const Login = () => {
           <input
             type="password"
             placeholder="Password"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="mb-3 p-3 border rounded-lg focus:outline-none focus:border-blue-500"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            className="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition duration-300"
           >
             Login
           </button>
         </form>
 
-        {/* Demo Credentials */}
-        <p className="mt-4 text-center text-gray-600">
-          <strong>Demo Credentials:</strong> <br />
-          Email: <strong>demo@user.com</strong> <br />
-          Password: <strong>password123</strong>
-        </p>
-
-        {/* Register Link */}
-        <p className="mt-4 text-center">
+        <p className="text-center mt-4 text-gray-600">
           New user?{" "}
-          <Link to="/register" className="text-blue-500 underline">
+          <Link to="/register" className="text-blue-500 hover:underline">
             Register here
           </Link>
         </p>

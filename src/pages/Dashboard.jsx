@@ -1,15 +1,17 @@
-import AnalyticsDashboard from "../components/AnalyticsDashboard";
-import AttendeeList from "../components/AttendeeList";
+import React from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Dashboard = () => {
-  const attendees = [{ name: "John Doe", email: "john@example.com" }, { name: "Jane Doe", email: "jane@example.com" }];
+  const { user } = useAuth();
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold text-center mb-6">Dashboard</h1>
-      <div className="grid grid-cols-2 gap-6">
-        <AnalyticsDashboard />
-        <AttendeeList attendees={attendees} />
+    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+      <h2 className="text-2xl font-bold mb-4">Welcome, {user?.name || "User"}!</h2>
+      <p>Select an option below:</p>
+      <div className="mt-4">
+        <Link to="/events" className="bg-green-500 text-white px-4 py-2 rounded mr-2">View Events</Link>
+        <Link to="/create-event" className="bg-blue-500 text-white px-4 py-2 rounded">Create Event</Link>
       </div>
     </div>
   );

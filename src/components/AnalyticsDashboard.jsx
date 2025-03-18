@@ -1,11 +1,10 @@
+import React from "react";
+
 const AnalyticsDashboard = () => {
   return (
-    <div className="bg-white shadow-md p-6 rounded-lg">
-      <h2 className="text-2xl font-bold">Event Analytics</h2>
-      <p>Total Events: 15</p>
-      <p>Total Attendees: 300</p>
-      <p>Total Revenue: $4500</p>
-      <p className="text-gray-500 mt-2">Graphs & Charts can be added here.</p>
+    <div className="p-6 bg-white shadow-md rounded-md">
+      <h2 className="text-xl font-bold mb-4">Event Analytics</h2>
+      <p>Coming soon: Analytics on event attendance and engagement.</p>
     </div>
   );
 };

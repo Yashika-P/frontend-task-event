@@ -1,31 +1,36 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
-const EventForm = ({ onSubmit, initialData = {} }) => {
-  const [event, setEvent] = useState({
-    title: initialData.title || "",
-    description: initialData.description || "",
-    date: initialData.date || "",
-    location: initialData.location || "",
-    price: initialData.price || "",
-  });
+const EventForm = ({ onSubmit }) => {
+  const [eventData, setEventData] = useState({ title: "", date: "" });
 
   const handleChange = (e) => {
-    setEvent({ ...event, [e.target.name]: e.target.value });
+    setEventData({ ...eventData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(event);
+    onSubmit(eventData);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <input type="text" name="title" value={event.title} onChange={handleChange} placeholder="Event Title" className="w-full p-2 border" required />
-      <textarea name="description" value={event.description} onChange={handleChange} placeholder="Event Description" className="w-full p-2 border" required />
-      <input type="date" name="date" value={event.date} onChange={handleChange} className="w-full p-2 border" required />
-      <input type="text" name="location" value={event.location} onChange={handleChange} placeholder="Event Location" className="w-full p-2 border" required />
-      <input type="number" name="price" value={event.price} onChange={handleChange} placeholder="Ticket Price" className="w-full p-2 border" required />
-      <button type="submit" className="w-full bg-blue-500 text-white p-2">Submit</button>
+    <form onSubmit={handleSubmit} className="p-6 bg-white shadow-md rounded-md">
+      <h2 className="text-xl font-bold mb-4">Create Event</h2>
+      <input
+        type="text"
+        name="title"
+        placeholder="Event Title"
+        value={eventData.title}
+        onChange={handleChange}
+        className="border p-2 w-full mb-2"
+      />
+      <input
+        type="date"
+        name="date"
+        value={eventData.date}
+        onChange={handleChange}
+        className="border p-2 w-full mb-2"
+      />
+      <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-md">Submit</button>
     </form>
   );
 };
