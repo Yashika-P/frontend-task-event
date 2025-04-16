@@ -6,24 +6,23 @@ import { loginUser } from "../api/api";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth(); // ✅ Use `login`
-  const [error, setError] = useState("");  
+  const { login } = useAuth();  // ✅ used to set user in context
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const data = await loginUser(email, password);
-      console.log('Login successful:', data);
-      alert(`Welcome, ${data.user.name}!`);
+      const userData = { email, password };
+      console.log("📩 Sending login data:", userData);
+      const response = await loginUser(userData);
+      console.log("✅ Login successful:", response);
 
-      // ✅ Log in user and redirect to dashboard
-      login(data.user); 
-      navigate("/dashboard"); 
-
+      login(response.data);  // ✅ sets user data in AuthContext
+      alert("Login successful!");
+      navigate("/dashboard");
     } catch (error) {
-      console.error('Login failed:', error);
-      setError(error.response?.data?.message || 'Login failed');
+      console.error("❌ Login failed:", error);
+      alert("Invalid credentials. Please try again.");
     }
   };
 
@@ -34,8 +33,6 @@ const Login = () => {
     >
       <div className="bg-white p-6 rounded-lg shadow-md w-96">
         <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Login</h2>
-
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
         <form onSubmit={handleLogin} className="flex flex-col">
           <input

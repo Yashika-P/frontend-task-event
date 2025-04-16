@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getEventById, purchaseTicket } from "../api/api";
+import { getEventById, purchaseTicket, purchaseTickett } from "../api/api";
 import { useAuth } from "../context/AuthContext";
 
 const EventDetail = () => {
@@ -33,19 +33,29 @@ const EventDetail = () => {
 
   // ✅ Handle Ticket Purchase
   const handlePurchase = async () => {
-    if (!user) {
-      alert("You need to be logged in to buy tickets");
-      return;
-    }
-
     try {
-      await purchaseTicket(event._id, user._id, ticketType, event.price, quantity);
+      const userId = localStorage.getItem("userId"); // Or get from AuthContext if you store it there
+      if (!userId) {
+        alert("Please log in first.");
+        return;
+      }
+
+      const ticketData = {
+        eventId: event._id,
+        userId: userId,
+        quantity: 1,
+      };
+
+      console.log("📌 Sending ticket data:", ticketData);
+      const response = await purchaseTicket(ticketData);
+      console.log("🎟️ Ticket purchase success:", response.data);
       alert("Ticket purchased successfully!");
     } catch (error) {
-      console.error("Failed to purchase ticket:", error);
-      alert(error.response?.data?.message || "Failed to purchase ticket");
+      console.error("❌ Failed to purchase ticket:", error);
+      alert("Failed to purchase ticket. Please try again.");
     }
   };
+
 
   if (loading) return <p>Loading event details...</p>;
   if (error) return <p>{error}</p>;

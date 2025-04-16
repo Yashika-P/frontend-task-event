@@ -1,30 +1,40 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-// Create the authentication context
+// Create the AuthContext
 const AuthContext = createContext();
 
-// Provide authentication state to the entire application
+// AuthProvider component
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-
-  // Check if user is already logged in from local storage
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+  // ✅ Safely get user from localStorage (avoid parsing undefined)
+  const storedUser = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user")) || null;
+    } catch (error) {
+      console.error("❌ Error parsing user from localStorage:", error);
+      return null;
     }
-  }, []);
+  })();
 
-  // Function to log in a user
+  // State for user
+  const [user, setUser] = useState(storedUser);
+
+  // Save user to localStorage whenever it changes
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
+
+  // Login function
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
   };
 
-  // Function to log out a user
+  // Logout function
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user");
   };
 
   return (
@@ -34,9 +44,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use authentication state
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
-
-export default AuthContext;
+// Custom hook to use AuthContext
+export const useAuth = () => useContext(AuthContext);

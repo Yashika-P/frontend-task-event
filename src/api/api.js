@@ -2,22 +2,34 @@ import axios from "axios";
 
 const API_BASE_URL =
   process.env.NODE_ENV === "development"
-    ? "http://localhost:5000/api" // For development
-    : "https://backend-task-erlt.onrender.com/api"; // For production
+    ? "http://localhost:5000/api" // Development
+    : "https://backend-task-erlt.onrender.com/api"; // Production
 
-// Axios instance for cleaner requests
+// ✅ Axios instance
 const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true,
+    baseURL: API_BASE_URL,
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true
 });
+
+// ✅ Register User
+export const registerUser = async (userData) => {
+    try {
+        console.log("📌 Sending registration request:", userData); // Debugging log
+        const response = await api.post("/auth/register", userData);
+        console.log("✅ Registration successful:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("🚨 Registration error:", error.response?.data || error.message);
+        alert(error.response?.data?.message || "Registration failed. Please try again.");
+        throw error;
+    }
+};
 
 // ✅ Fetch all events
 export const getEvents = async () => {
   try {
-    const response = await API.get('/events');
+    const response = await api.get('/events'); // ✅ Changed from API.get() to api.get()
     console.log('📌 API response:', response.data);
     return response.data;
   } catch (error) {
@@ -29,7 +41,7 @@ export const getEvents = async () => {
 // ✅ Fetch event by ID
 export const getEventById = async (id) => {
   try {
-    const response = await API.get(`/events/${id}`);
+    const response = await api.get(`/events/${id}`); // ✅ Fixed API call
     return response.data;
   } catch (error) {
     console.error('Error fetching event:', error);
@@ -48,66 +60,17 @@ export const createEvent = async (eventData) => {
   }
 };
 
-// ✅ Approve an event (Admin)
-export const approveEvent = async (eventId) => {
-  try {
-    await api.put(`/events/${eventId}/approve`);
-  } catch (error) {
-    console.error("Error approving event:", error);
-  }
+
+
+// ✅ Login user (Fixed API call)
+export const loginUser = async (userData) => {
+  const response = await axios.post("http://localhost:5000/api/auth/login", userData, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+  return response;
 };
-
-// ✅ Reject an event (Admin)
-export const rejectEvent = async (eventId) => {
-  try {
-    await api.put(`/events/${eventId}/reject`);
-  } catch (error) {
-    console.error("Error rejecting event:", error);
-  }
-};
-
-// ✅ Fetch user's registered events
-export const getUserEvents = async (userId) => {
-  try {
-    const response = await api.get(`/users/${userId}/events`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching user events:", error);
-    return [];
-  }
-};
-
-// ✅ Register a new user
-export const registerUser = async (userData) => {
-  try {
-    console.log("📌 Sending userData:", userData);
-    const response = await axios.post(`${API_BASE_URL}/auth/register`, userData);
-    console.log("✅ Registration successful:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("❌ Error registering user:", error.response || error.message);
-    throw error.response?.data || error.message;
-  }
-};
-
-
-
-// ✅ Login user
-export const loginUser = async (email, password) => {
-  try {
-    // ✅ Ensure the correct body format
-    const response = await API.post('/auth/login', {
-      email,
-      password,
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error('Error logging in:', error);
-    throw error;
-  }
-};
-
 
 // ✅ Logout user
 export const logoutUser = async () => {
@@ -118,12 +81,12 @@ export const logoutUser = async () => {
   }
 };
 
-// ✅ Purchase Ticket
+// ✅ Purchase Ticket (Fixed API call)
 export const purchaseTicket = async (eventId, userId, ticketType, price, quantity) => {
   try {
     console.log("📌 Sending ticket data:", { eventId, userId, ticketType, price, quantity });
 
-    const response = await axios.post(`http://localhost:5000/api/tickets`, {
+    const response = await api.post(`/tickets`, {
       eventId,
       userId,
       ticketType,
@@ -139,11 +102,10 @@ export const purchaseTicket = async (eventId, userId, ticketType, price, quantit
   }
 };
 
-
-// Fetch all events (For Admin Dashboard)
+// ✅ Fetch all events (For Admin Dashboard)
 export const getAllEvents = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/events/all`); // Check if this route exists in your backend
+    const response = await api.get(`/events/all`); // ✅ Fixed API call
     return response.data;
   } catch (error) {
     console.error("Error fetching all events:", error);
@@ -153,12 +115,41 @@ export const getAllEvents = async () => {
 
 
 
+// ✅ Approve an event (Admin)
+export const approveEvent = async (eventId) => {
+  try {
+    await api.put(`/events/${eventId}/approve`);
+  } catch (error) {
+    console.error("Error approving event:", error);
+    throw error;
+  }
+};
+
+// ✅ Reject an event (Admin)
+export const rejectEvent = async (eventId) => {
+  try {
+    await api.put(`/events/${eventId}/reject`);
+  } catch (error) {
+    console.error("Error rejecting event:", error);
+    throw error;
+  }
+};
+
+// ✅ Fetch user's registered events
+export const getUserEvents = async (userId) => {
+  try {
+    const response = await api.get(`/users/${userId}/events`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user events:", error);
+    return [];
+  }
+};
 
 
+// ✅ Fetch and manage attendees
+export const fetchAttendees = () => api.get('/attendees');
+export const createAttendee = (attendee) => api.post('/attendees', attendee);
+export const deleteAttendee = (id) => api.delete(`/attendees/${id}`);
 
-
-const API = axios.create({ baseURL: API_BASE_URL });
-export default API;
-export const fetchAttendees = () => API.get('/attendees');
-export const createAttendee = (attendee) => API.post('/attendees', attendee);
-export const deleteAttendee = (id) => API.delete(`/attendees/${id}`);
+export default api;
