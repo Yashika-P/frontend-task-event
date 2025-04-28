@@ -64,12 +64,16 @@ export const createEvent = async (eventData) => {
 
 // ✅ Login user (Fixed API call)
 export const loginUser = async (userData) => {
-  const response = await axios.post("http://localhost:5000/api/auth/login", userData, {
-    headers: {
-      "Content-Type": "application/json"
-    }
-  });
-  return response;
+  try {
+    console.log("📩 Sending login data:", userData); // Debugging log
+    const response = await api.post("/auth/login", userData); // 👈 Using 'api' not 'axios' directly
+    console.log("✅ Login successful:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("🚨 Login error:", error.response?.data || error.message);
+    alert(error.response?.data?.message || "Login failed. Please try again.");
+    throw error;
+  }
 };
 
 // ✅ Logout user
