@@ -4,23 +4,23 @@ import { FaHome, FaCalendarAlt, FaUsers, FaChartBar, FaTicketAlt } from 'react-i
 
 const Navbar = () => {
   return (
-    <nav className="p-4 bg-gray-800 text-white flex justify-center space-x-6 shadow-md">
-      <Link to="/" className="flex items-center gap-2 hover:text-blue-400">
+    <nav className="p-4 bg-white text-black flex justify-center space-x-6 shadow-md">
+      <Link to="/" className="flex items-center gap-2 hover:text-gray-600">
         <FaHome /> Home
       </Link>
-      <Link to="/events" className="flex items-center gap-2 hover:text-blue-400">
+      <Link to="/events" className="flex items-center gap-2 hover:text-gray-600">
         <FaCalendarAlt /> Events
       </Link>
-      <Link to="/schedule" className="flex items-center gap-2 hover:text-blue-400">
+      <Link to="/schedule" className="flex items-center gap-2 hover:text-gray-600">
         <FaCalendarAlt /> Event Schedule
       </Link>
-      <Link to="/attendees" className="flex items-center gap-2 hover:text-blue-400">
+      <Link to="/attendees" className="flex items-center gap-2 hover:text-gray-600">
         <FaUsers /> Attendee List
       </Link>
-      <Link to="/analytics" className="flex items-center gap-2 hover:text-blue-400">
+      <Link to="/analytics" className="flex items-center gap-2 hover:text-gray-600">
         <FaChartBar /> Analytics
       </Link>
-      <Link to="/purchase" className="flex items-center gap-2 hover:text-blue-400">
+      <Link to="/purchase" className="flex items-center gap-2 hover:text-gray-600">
         <FaTicketAlt /> Buy Ticket
       </Link>
     </nav>
@@ -28,5 +28,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-

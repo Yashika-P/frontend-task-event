@@ -1,61 +1,65 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getEventById, purchaseTicket, purchaseTickett } from "../api/api";
+import { getEventById, purchaseTicket } from "../api/api";
 import { useAuth } from "../context/AuthContext";
 
 const EventDetail = () => {
-  const { id } = useParams(); // Get the event ID from the URL
+  const { id } = useParams();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [ticketType, setTicketType] = useState("General");
   const [quantity, setQuantity] = useState(1);
-  const { user } = useAuth(); // ✅ To get logged-in user info
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchEvent = async () => {
-      setLoading(true);
-      setError("");
       try {
         const data = await getEventById(id);
-        console.log("Fetched event details:", data);
         setEvent(data);
       } catch (error) {
-        console.error("Failed to fetch event details:", error);
-        setError("Failed to load event details");
+        setError("Failed to load event details.");
+        console.error("Error fetching event:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchEvent();
   }, [id]);
 
-  // ✅ Handle Ticket Purchase
-  const handlePurchase = async () => {
-    try {
-      const userId = localStorage.getItem("userId"); // Or get from AuthContext if you store it there
-      if (!userId) {
-        alert("Please log in first.");
+ const handlePurchase = async () => {
+    // 🟢 Make sure the user is logged in
+    const userId = user?._id || user?.userId; // handle both backend response types
+    if (!userId) {
+        alert("⚠️ Please log in first.");
         return;
-      }
-
-      const ticketData = {
-        eventId: event._id,
-        userId: userId,
-        quantity: 1,
-      };
-
-      console.log("📌 Sending ticket data:", ticketData);
-      const response = await purchaseTicket(ticketData);
-      console.log("🎟️ Ticket purchase success:", response.data);
-      alert("Ticket purchased successfully!");
-    } catch (error) {
-      console.error("❌ Failed to purchase ticket:", error);
-      alert("Failed to purchase ticket. Please try again.");
     }
-  };
 
+    try {
+        const ticketData = {
+            eventId: event._id,
+            userId: user._id || user.userId,
+            ticketType,
+            price: event.price || 100,  // 🟢 Set a default price if not available
+            quantity,
+        };
+
+        // 🟢 Make sure the API call includes credentials
+        const response = await purchaseTicket(ticketData);
+        
+        // ✅ Check if response has the correct format
+        if (response.success && response.ticket) {
+            alert("🎟️ Ticket purchased successfully!");
+            console.log("Purchase Response:", response.ticket);
+        } else {
+            console.error("❌ Invalid response format:", response);
+            alert("❌ Purchase failed. Please try again.");
+        }
+    } catch (error) {
+        alert("❌ Purchase failed. Try again.");
+        console.error("Purchase error:", error);
+    }
+};
 
   if (loading) return <p>Loading event details...</p>;
   if (error) return <p>{error}</p>;
@@ -65,7 +69,7 @@ const EventDetail = () => {
       <div className="container mx-auto px-4">
         <h1 className="text-4xl font-bold mb-6">{event.title}</h1>
         <img 
-          src={event.image || "/images/music festival.jpg"} 
+          src={event.image || "/images/music-festival.jpg"} 
           alt={event.title} 
           className="w-full h-64 object-cover rounded-lg mb-4"
         />
@@ -73,12 +77,12 @@ const EventDetail = () => {
         <p className="text-gray-500 mb-2">📍 {event.location}</p>
         <p className="text-gray-500 mb-6">📅 {new Date(event.date).toLocaleDateString()}</p>
 
-        {/* ✅ Ticket Purchase Form */}
+        {/* Ticket Purchase UI */}
         <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
           <h2 className="text-2xl font-semibold mb-4">Buy Tickets</h2>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Ticket Type</label>
+            <label className="block mb-1 font-medium">Ticket Type</label>
             <select
               value={ticketType}
               onChange={(e) => setTicketType(e.target.value)}
@@ -91,7 +95,7 @@ const EventDetail = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+            <label className="block mb-1 font-medium">Quantity</label>
             <input
               type="number"
               value={quantity}
@@ -103,7 +107,7 @@ const EventDetail = () => {
 
           <button
             onClick={handlePurchase}
-            className="w-full bg-green-500 text-white p-3 rounded-lg hover:bg-green-600 transition"
+            className="w-full bg-black text-white p-3 rounded hover:opacity-90 transition"
           >
             Buy Now
           </button>
