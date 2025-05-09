@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { getEventById, purchaseTicket } from '../api/api'; // ✅ Include purchaseTicket
 import { useAuth } from '../context/AuthContext'; // ✅ Import useAuth
 
 const TicketPurchase = () => {
   const { id } = useParams();
-  const navigate = useNavigate(); 
+  //const navigate = useNavigate(); 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -30,18 +30,22 @@ const TicketPurchase = () => {
     fetchEvent();
   }, [id]);
 
-  const handlePurchase = async () => {
-    if (!userId) {
-  return res.status(401).json({ message: "Please login first" });
-}
+   const handlePurchase = async () => {
+        try {
+            if (!user || !user._id) {
+                alert("Please log in first.");
+                return;
+            }
 
-    try {
-      const ticketData = {
-        eventId: event._id,
-        userId: user._id,
-        ticketType,
-        quantity,
-      };
+            const userId = user._id; // ✅ Make sure this is correctly defined
+
+            const ticketData = {
+                eventId: event._id,
+                userId,  // ✅ Correct usage
+                ticketType,
+                price: event.price || 100, // Default price if not available
+                quantity,
+            };
 
       const response = await purchaseTicket(ticketData);
       alert('🎟️ Ticket purchased successfully!');

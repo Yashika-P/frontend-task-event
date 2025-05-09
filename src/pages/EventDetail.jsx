@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getEventById, purchaseTicket } from "../api/api";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom"; 
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -11,6 +12,7 @@ const EventDetail = () => {
   const [ticketType, setTicketType] = useState("General");
   const [quantity, setQuantity] = useState(1);
   const { user } = useAuth();
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -36,30 +38,25 @@ const EventDetail = () => {
     }
 
     try {
-        const ticketData = {
-            eventId: event._id,
-            userId: user._id || user.userId,
-            ticketType,
-            price: event.price || 100,  // 🟢 Set a default price if not available
-            quantity,
-        };
+            const ticketData = {
+                eventId: event._id,
+                userId: user._id || user.userId,
+                ticketType,
+                price: event.price || 100,  // 🟢 Set a default price if not available
+                quantity,
+            };
 
-        // 🟢 Make sure the API call includes credentials
-        const response = await purchaseTicket(ticketData);
-        
-        // ✅ Check if response has the correct format
-        if (response.success && response.ticket) {
+            // 🟢 Make sure the API call includes credentials
+            await purchaseTicket(ticketData);
             alert("🎟️ Ticket purchased successfully!");
-            console.log("Purchase Response:", response.ticket);
-        } else {
-            console.error("❌ Invalid response format:", response);
-            alert("❌ Purchase failed. Please try again.");
+            
+            // ✅ Redirect to My Tickets Page
+            navigate("/my-tickets");
+        } catch (error) {
+            alert("❌ Purchase failed. Try again.");
+            console.error("Purchase error:", error);
         }
-    } catch (error) {
-        alert("❌ Purchase failed. Try again.");
-        console.error("Purchase error:", error);
-    }
-};
+    };
 
   if (loading) return <p>Loading event details...</p>;
   if (error) return <p>{error}</p>;

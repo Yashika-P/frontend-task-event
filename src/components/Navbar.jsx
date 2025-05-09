@@ -23,6 +23,9 @@ const Navbar = () => {
       <Link to="/purchase" className="flex items-center gap-2 hover:text-gray-600">
         <FaTicketAlt /> Buy Ticket
       </Link>
+      <Link to="/my-tickets" className="flex items-center gap-2 hover:text-gray-600">
+        <FaTicketAlt /> My Tickets
+      </Link>
     </nav>
   );
 };

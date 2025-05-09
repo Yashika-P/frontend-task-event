@@ -14,6 +14,7 @@ import EventSchedule from './components/EventSchedule';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
 import TicketPurchase from './components/TicketPurchase';
 import CreateEvent from "./pages/CreateEvent";
+import MyTickets from "./components/MyTickets";
 import PrivateRoute from "./components/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 import NotFound from "./pages/NotFound";
@@ -37,7 +38,8 @@ function App() {
             <Route path="/attendees" element={<AttendeeList />} />
         <Route path="/schedule" element={<EventSchedule />} />
         <Route path="/analytics" element={<PrivateRoute><AnalyticsDashboard /></PrivateRoute>} />
-             <Route path="/buy-ticket/:id" element={<TicketPurchase />} />
+            <Route path="/buy-ticket/:id" element={<TicketPurchase />} />
+            <Route path="/my-tickets" element={<MyTickets />} />
             <Route path="*" element={<Navigate to="/" />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
